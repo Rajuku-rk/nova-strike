@@ -34,30 +34,54 @@ canvas{display:block;flex:1;width:100%!important;height:auto!important;}
   padding:0 22px;pointer-events:none;z-index:8;
 }
 #joyWrap{
-  position:relative;width:118px;height:118px;
-  background:rgba(10,10,40,.55);border:1.5px solid #2244bb88;
+  position:relative;width:100px;height:100px;
+  background:rgba(10,10,40,.22);border:1.5px solid rgba(34,68,187,.3);
   border-radius:50%;flex-shrink:0;pointer-events:all;
-  box-shadow:0 0 18px #1a6fff22,inset 0 0 22px #00000055;
-  backdrop-filter:blur(4px);
+  box-shadow:0 0 12px rgba(26,111,255,.08);
+  backdrop-filter:blur(2px);
 }
 #joyStick{
-  position:absolute;width:44px;height:44px;
-  background:radial-gradient(circle at 38% 38%,#5577ee,#1a2266);
-  border:2px solid #5577ff;border-radius:50%;
+  position:absolute;width:38px;height:38px;
+  background:radial-gradient(circle at 38% 38%,rgba(85,119,238,.55),rgba(26,34,102,.45));
+  border:1.5px solid rgba(85,119,255,.4);border-radius:50%;
   top:50%;left:50%;transform:translate(-50%,-50%);
-  box-shadow:0 0 14px #1a6fff88;touch-action:none;
+  box-shadow:0 0 10px rgba(26,111,255,.25);touch-action:none;
 }
 #fireBtn{
-  width:96px;height:96px;
-  background:radial-gradient(circle at 38% 38%,#440800,#1a0300);
-  border:2px solid #ff4400;color:var(--gold);
-  font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;
+  width:78px;height:78px;
+  background:radial-gradient(circle at 38% 38%,rgba(68,8,0,.35),rgba(26,3,0,.3));
+  border:1.5px solid rgba(255,68,0,.35);color:rgba(255,214,0,.65);
+  font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;
   border-radius:50%;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:3px;
+  align-items:center;justify-content:center;gap:2px;
   cursor:pointer;flex-shrink:0;touch-action:none;pointer-events:all;
-  box-shadow:0 0 20px #ff440044;
+  box-shadow:0 0 12px rgba(255,68,0,.12);
 }
-#fireBtn.pr{background:radial-gradient(circle at 38% 38%,#882200,#330800);box-shadow:0 0 26px #ff6600bb;border-color:#ff6600;}
+#fireBtn.pr{background:radial-gradient(circle at 38% 38%,rgba(136,34,0,.5),rgba(51,8,0,.45));box-shadow:0 0 18px rgba(255,102,0,.4);border-color:rgba(255,102,0,.6);}
+/* POWER BUTTON — boss fight special */
+#powerBtn{
+  width:62px;height:62px;
+  background:radial-gradient(circle at 38% 38%,rgba(0,30,80,.3),rgba(0,8,30,.25));
+  border:2px solid rgba(0,229,255,.2);color:rgba(0,229,255,.5);
+  font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;
+  border-radius:50%;display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;
+  cursor:pointer;flex-shrink:0;touch-action:none;pointer-events:all;
+  position:relative;overflow:hidden;
+  transition:all .3s;
+}
+#powerBtn.ready{
+  border-color:rgba(0,229,255,.8);color:#00e5ff;
+  box-shadow:0 0 22px rgba(0,229,255,.45),inset 0 0 18px rgba(0,229,255,.15);
+  animation:powerPulse 1s ease-in-out infinite;
+}
+#powerBtn .pwFill{
+  position:absolute;bottom:0;left:0;width:100%;height:0%;
+  background:linear-gradient(to top,rgba(0,229,255,.2),rgba(0,229,255,.05));
+  border-radius:50%;transition:height .15s;
+  pointer-events:none;
+}
+@keyframes powerPulse{0%,100%{box-shadow:0 0 22px rgba(0,229,255,.45);}50%{box-shadow:0 0 34px rgba(0,229,255,.7);}}
 .screen{position:absolute;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:10;}
 .screen.on{display:flex;}
 #titleScreen{background:radial-gradient(ellipse at 50% 30%,#0a0a2e,#02020e 70%);}
@@ -154,7 +178,10 @@ canvas{display:block;flex:1;width:100%!important;height:auto!important;}
   <div id="bonusPop"></div>
   <div id="mob">
     <div id="joyWrap"><div id="joyStick"></div></div>
-    <button id="fireBtn"><span style="font-size:22px">🔥</span><span>FIRE</span></button>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:none;">
+      <button id="powerBtn"><div class="pwFill" id="pwFill"></div><span style="font-size:16px;position:relative;z-index:1;">⚡</span><span style="position:relative;z-index:1;">POWER</span></button>
+      <button id="fireBtn"><span style="font-size:18px">🔥</span><span>FIRE</span></button>
+    </div>
   </div>
 
   <!-- TITLE -->
@@ -460,6 +487,9 @@ let shotsFired=0,shotsHit=0;
 let waveNum=0,powerStrength=0;
 let activeTwist=null,twistTimer=0,usedTwists=[],pendingTwist=null,warnTimer=0;
 let nextTwist=null;  // queued for next level
+
+// BOSS POWER METER — fills every 3s (180 frames @60fps), unleash on click
+let bossPower=0;const BOSS_POWER_MAX=180;let bossPowerReady=false;
 
 // Stars
 let stars=[];
@@ -1128,6 +1158,27 @@ function loop(ts){
   if(timeWarpTimer>0){timeWarpTimer-=rawDt;if(timeWarpTimer<=0){timeWarpTimer=0;slowMult=1;document.getElementById('timeWarpFx').classList.remove('on');}}
   if(player.homingTimer>0){player.homingTimer-=rawDt;if(player.homingTimer<=0){player.homingShots=false;}}
 
+  // Boss power meter — fills during boss fight
+  if(bossMode&&boss){
+    document.getElementById('powerBtn').style.display='flex';
+    if(!bossPowerReady){
+      bossPower+=rawDt;
+      const pct=Math.min(100,bossPower/BOSS_POWER_MAX*100);
+      document.getElementById('pwFill').style.height=pct+'%';
+      if(bossPower>=BOSS_POWER_MAX){
+        bossPowerReady=true;
+        document.getElementById('powerBtn').classList.add('ready');
+        showMsg('⚡ POWER READY!','#00e5ff',12);
+        SFX.pup();
+      }
+    }
+  } else {
+    document.getElementById('powerBtn').style.display='none';
+    document.getElementById('powerBtn').classList.remove('ready');
+    bossPower=0;bossPowerReady=false;
+    document.getElementById('pwFill').style.height='0%';
+  }
+
   // Twist
   updateTwist(rawDt);
 
@@ -1436,6 +1487,7 @@ function startGame(fromLv=1){
 document.addEventListener('keydown',e=>{
   keys[e.key]=true;if(e.key===' ')e.preventDefault();
   if(e.key==='Escape'||e.key==='p'||e.key==='P')togglePause();
+  if(e.key==='q'||e.key==='Q')useBossPower();
   rAC();
 });
 document.addEventListener('keyup',e=>{keys[e.key]=false;});
@@ -1473,6 +1525,42 @@ document.getElementById('resumeBtn').addEventListener('click',togglePause);
   fb.addEventListener('touchend',e=>{e.preventDefault();keys['ms']=false;fb.classList.remove('pr');});
   fb.addEventListener('mousedown',()=>keys['ms']=true);
   fb.addEventListener('mouseup',()=>keys['ms']=false);
+})();
+
+// Power button — boss special attack
+function useBossPower(){
+  if(!bossPowerReady||!bossMode||!boss||!gameOn||paused)return;
+  rAC();bossPowerReady=false;bossPower=0;
+  document.getElementById('powerBtn').classList.remove('ready');
+  document.getElementById('pwFill').style.height='0%';
+  // MASSIVE BLAST — damages boss, clears enemy bullets, screen shake
+  const dmg=Math.max(20,Math.floor(boss.maxHp*0.15));
+  boss.hp-=dmg;
+  SFX.nuke();screenShake=28;
+  burst(player.x,player.y,'#00e5ff',40,{life:38,size:6,speed:7,circle:true});
+  burst(boss.x,boss.y,'#ff44ff',30,{life:32,size:5,speed:5});
+  // Clear all enemy bullets
+  const cleared=bullets.filter(b=>b.enemy).length;
+  bullets=bullets.filter(b=>!b.enemy);
+  // Score bonus
+  score+=200+cleared*10;
+  showMsg('⚡ POWER BLAST! -'+dmg+' HP','#00e5ff',15);
+  // Check boss death
+  if(boss.hp<=0){
+    burst(boss.x,boss.y,'#cc44ff',55,{life:44,size:6,speed:5});
+    burst(boss.x,boss.y,'#ff88ff',28,{life:36,size:8,speed:3,circle:true});
+    SFX.hitL();screenShake=26;score+=1000*level;bossMode=false;
+    if(bossNoHit)unlockAch('boss_no_hit');unlockAch('boss_kill');
+    dropPowerup(boss.x-28,boss.y);dropPowerup(boss.x,boss.y-12);dropPowerup(boss.x+28,boss.y);
+    killCount+=5;updateKillBar();boss=null;checkAchs();updateHUD();
+    setTimeout(()=>{if(gameOn&&killCount>=killQuota&&enemies.length===0)showLevelComplete();},500);
+  }
+  updateHUD();
+}
+(function(){
+  const pb=document.getElementById('powerBtn');
+  pb.addEventListener('touchstart',e=>{e.preventDefault();useBossPower();},{passive:false});
+  pb.addEventListener('click',()=>useBossPower());
 })();
 
 // ══════════════════════════════════════════════
