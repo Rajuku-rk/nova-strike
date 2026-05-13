@@ -6,27 +6,58 @@
 <title>NOVA STRIKE — Fight Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#02020e;--panel:#06061a;--blue:#1a6fff;--cyan:#00e5ff;--gold:#ffd600;--red:#ff2244;--green:#00ff88;--purple:#cc44ff;--text:#c8d8ff;--dim:#3a4a7a;}
+:root{--bg:#02020e;--panel:#06061822;--blue:#1a6fff;--cyan:#00e5ff;--gold:#ffd600;--red:#ff2244;--green:#00ff88;--purple:#cc44ff;--text:#c8d8ff;--dim:#3a4a7a;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 body{display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;}
-#gw{position:relative;width:540px;display:flex;flex-direction:column;user-select:none;}
-#hud{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:var(--panel);border:1px solid #1a2255;border-bottom:none;border-radius:6px 6px 0 0;gap:5px;flex-wrap:wrap;}
+#gw{position:fixed;top:0;left:0;width:100vw;height:100vh;display:flex;flex-direction:column;user-select:none;background:#000;}
+#hud{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:5px 18px;background:rgba(4,4,24,.82);backdrop-filter:blur(8px);
+  border-bottom:1px solid #1a6fff44;gap:8px;flex-wrap:wrap;z-index:6;
+  box-shadow:0 2px 24px #1a6fff22;
+}
 .hi{display:flex;flex-direction:column;align-items:center;gap:1px;}
-.hl{font-size:7px;color:var(--dim);letter-spacing:2px;}
-.hv{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff;}
+.hl{font-size:7px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;}
+.hv{font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:#fff;text-shadow:0 0 8px var(--cyan);}
 .hlives{display:flex;gap:2px;align-items:center;}
-.heart{font-size:10px;}
-#killBar{width:120px;height:6px;background:#1a2255;border-radius:3px;overflow:hidden;margin-top:2px;}
-#killFill{height:100%;background:var(--green);border-radius:3px;transition:width .2s;}
-#gunBar{height:3px;width:50px;background:#1a2255;border-radius:2px;overflow:hidden;margin-top:2px;}
+.heart{font-size:11px;}
+#killBar{width:100px;height:5px;background:#0a1a3a;border-radius:3px;overflow:hidden;margin-top:2px;box-shadow:0 0 4px #00ff8833;}
+#killFill{height:100%;background:var(--green);border-radius:3px;transition:width .15s;}
+#gunBar{height:3px;width:44px;background:#0a1a3a;border-radius:2px;overflow:hidden;margin-top:2px;}
 #gunFill{height:100%;border-radius:2px;}
-canvas{display:block;}
-#mob{display:none;justify-content:space-between;align-items:center;padding:6px 10px;background:var(--panel);border:1px solid #1a2255;border-top:none;border-radius:0 0 6px 6px;gap:8px;}
-#joyWrap{position:relative;width:110px;height:110px;background:#0a0a28;border:1px solid #2233aa;border-radius:50%;flex-shrink:0;}
-#joyStick{position:absolute;width:42px;height:42px;background:radial-gradient(circle at 40% 40%,#4466cc,#1a2266);border:2px solid #4466ff;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 10px #1a6fff55;touch-action:none;}
-#fireBtn{width:90px;height:90px;background:radial-gradient(circle at 40% 40%,#331100,#1a0500);border:2px solid #cc6600;color:var(--gold);font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;flex-shrink:0;touch-action:none;}
-#fireBtn.pr{background:radial-gradient(circle at 40% 40%,#552200,#2a0800);box-shadow:0 0 14px #ffd60055;}
+canvas{display:block;flex:1;width:100%!important;height:auto!important;}
+/* OVERLAY CONTROLS — always visible bottom corners */
+#mob{
+  position:absolute;bottom:18px;left:0;right:0;
+  display:flex!important;justify-content:space-between;align-items:flex-end;
+  padding:0 22px;pointer-events:none;z-index:8;
+}
+#joyWrap{
+  position:relative;width:118px;height:118px;
+  background:rgba(10,10,40,.55);border:1.5px solid #2244bb88;
+  border-radius:50%;flex-shrink:0;pointer-events:all;
+  box-shadow:0 0 18px #1a6fff22,inset 0 0 22px #00000055;
+  backdrop-filter:blur(4px);
+}
+#joyStick{
+  position:absolute;width:44px;height:44px;
+  background:radial-gradient(circle at 38% 38%,#5577ee,#1a2266);
+  border:2px solid #5577ff;border-radius:50%;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  box-shadow:0 0 14px #1a6fff88;touch-action:none;
+}
+#fireBtn{
+  width:96px;height:96px;
+  background:radial-gradient(circle at 38% 38%,#440800,#1a0300);
+  border:2px solid #ff4400;color:var(--gold);
+  font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;
+  border-radius:50%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  cursor:pointer;flex-shrink:0;touch-action:none;pointer-events:all;
+  box-shadow:0 0 20px #ff440044;
+}
+#fireBtn.pr{background:radial-gradient(circle at 38% 38%,#882200,#330800);box-shadow:0 0 26px #ff6600bb;border-color:#ff6600;}
 .screen{position:absolute;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:10;}
 .screen.on{display:flex;}
 #titleScreen{background:radial-gradient(ellipse at 50% 30%,#0a0a2e,#02020e 70%);}
@@ -83,7 +114,11 @@ canvas{display:block;}
 #killAlert{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:#ff2244;pointer-events:none;opacity:0;z-index:22;text-shadow:0 0 10px #ff2244;text-align:center;transition:opacity .3s;}
 #scanlines{position:absolute;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.022) 2px,rgba(0,0,0,.022) 4px);pointer-events:none;z-index:5;}
 @keyframes bonusPop{0%{transform:translate(-50%,-50%) scale(.5);opacity:0;}40%{transform:translate(-50%,-50%) scale(1.2);opacity:1;}70%{transform:translate(-50%,-50%) scale(.95);}100%{transform:translate(-50%,-50%) scale(1);opacity:0;}}
-@media(max-width:560px){#gw{width:100vw;}canvas{width:100vw!important;height:auto!important;}#mob{display:flex;}}
+/* pro gamer scan-line tint */
+#hud .hv{letter-spacing:3px;}
+.gbtn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;padding:9px 20px;cursor:pointer;text-transform:uppercase;border-radius:3px;transition:all .18s;border:1px solid;}
+/* WAVE BANNER */
+#waveAnn{font-size:13px;letter-spacing:5px;}
 </style>
 </head>
 <body>
@@ -100,7 +135,7 @@ canvas{display:block;}
     <div class="hi"><div class="hl">BEST</div><div class="hv" id="hiEl">000000</div></div>
     <div class="hi"><button id="pauseBtn" style="background:#0a0a2a;border:1px solid var(--dim);color:var(--dim);font-size:9px;padding:3px 7px;cursor:pointer;border-radius:2px;font-family:'Share Tech Mono',monospace;">⏸</button></div>
   </div>
-  <canvas id="cv" width="540" height="580"></canvas>
+  <canvas id="cv" width="960" height="720"></canvas>
   <div id="darkOverlay"></div>
   <div id="timeWarpFx"></div>
   <div id="dangerFlash"></div>
@@ -387,8 +422,20 @@ function showKillAlert(txt){
 //  CANVAS & GAME STATE
 // ══════════════════════════════════════════════
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-const W=cv.width,H=cv.height;
-const PLAY_TOP=H*.07,PLAY_BOT=H*.96;
+// Resize canvas to fill window dynamically
+function resizeCanvas(){
+  const hud=document.getElementById('hud');
+  const hudH=hud.offsetHeight||44;
+  cv.width=window.innerWidth;
+  cv.height=window.innerHeight-hudH;
+}
+resizeCanvas();
+window.addEventListener('resize',()=>{resizeCanvas();stars.length=0;for(let i=0;i<220;i++)stars.push({x:Math.random()*W,y:Math.random()*H,s:Math.random()*2+.3,v:Math.random()*.55+.1,b:Math.random(),big:Math.random()>.94});});
+// W and H as dynamic getters so resize is always reflected
+Object.defineProperty(window,'W',{get:()=>cv.width});
+Object.defineProperty(window,'H',{get:()=>cv.height});
+Object.defineProperty(window,'PLAY_TOP',{get:()=>cv.height*0.06});
+Object.defineProperty(window,'PLAY_BOT',{get:()=>cv.height*0.94});
 
 // Particle pool
 const PPOOL=[];
@@ -426,14 +473,14 @@ function getDiff(){
   const pb=Math.min(powerStrength*4,35);
   return Math.min(lb+pb,100);
 }
-// Spawn interval: very slow early (every 5s), fast late (~0.8s)
-function getSpawnInterval(){return Math.max(48,300-getDiff()*2.52);}
-// Enemies per wave: 1 early → 8 at max
-function getWaveSize(){return Math.max(1,Math.min(Math.round(1+getDiff()*.07),8));}
+// Spawn interval: fast from the start — Contra style
+function getSpawnInterval(){return Math.max(28,180-getDiff()*1.55);}
+// Enemies per wave: 3 early → 12 at max — formations!
+function getWaveSize(){return Math.max(3,Math.min(Math.round(3+getDiff()*.09),12));}
 // HP multiplier
 function getEnemyHP(base){return Math.max(1,Math.round(base*(1+getDiff()*.025)));}
-// Speed
-function getEnemySpd(){return(.45+Math.random()*.3)*(0.5+getDiff()*.0115)*slowMult;}
+// Speed — noticeably faster base
+function getEnemySpd(){return(.9+Math.random()*.55)*(0.65+getDiff()*.013)*slowMult;}
 // Pup drop rate: generous early, tighter late
 function getPupRate(){return Math.max(.2,.48-getDiff()*.0025);}
 
@@ -883,10 +930,20 @@ function spawnWave(){
   waveNum++;
   const count=getWaveSize();
   const d=getDiff();
-  const warnTxt='WAVE '+waveNum+(d>80?' ⚡⚡':d>55?' ⚡':'');
-  if(d>12)showWave(warnTxt);
-  // stagger spawns so it doesn't feel like a wall
-  for(let i=0;i<count;i++)setTimeout(()=>spawnEnemy(),i*90);
+  const warnTxt='▶ WAVE '+waveNum+(d>80?' ⚡⚡ ONSLAUGHT':d>55?' ⚡ SURGE':d>30?' INCOMING':'');
+  showWave(warnTxt);
+  // Contra-style: tight formation + flankers
+  const cols=Math.min(count,6);
+  const spacing=Math.floor((W-80)/Math.max(cols-1,1));
+  for(let i=0;i<count;i++){
+    const row=Math.floor(i/cols),col=i%cols;
+    const fx=(i<cols)?(40+col*spacing):null; // first row = formation, rest random
+    setTimeout(()=>spawnEnemy(fx),row*160+col*42);
+  }
+  // Extra flanker rush on later waves
+  if(d>35&&waveNum%3===0){
+    for(let f=0;f<2;f++)setTimeout(()=>{const fe=spawnEnemy(f===0?20:W-20);},count*42+200+f*80);
+  }
 }
 function spawnBoss(){
   bossMode=true;bossNoHit=true;
@@ -1109,14 +1166,22 @@ function loop(ts){
   // Spawn — only if kill quota not yet met
   if(!bossMode){
     spawnTimer+=rawDt;
-    // Only spawn more enemies if kill quota not yet met
     const quotaDone=killCount>=killQuota;
     if(!quotaDone&&spawnTimer>=getSpawnInterval()){spawnWave();spawnTimer=0;}
-    // Level complete when quota met AND all remaining enemies cleared
-    if(quotaDone&&enemies.length===0&&!pendingTwist&&!warnTimer){showLevelComplete();return;}
+    // When quota met: clear remaining enemies after brief moment, then advance
+    if(quotaDone){
+      // Wipe stragglers after 1.5s grace period
+      if(!window._quotaClearTimer){window._quotaClearTimer=90;}
+      window._quotaClearTimer-=rawDt;
+      if(window._quotaClearTimer<=0){
+        enemies.forEach(e=>burst(e.x,e.y,'#00ff88',6,{life:18,size:3}));
+        enemies=[];
+      }
+      if(enemies.length===0&&!pendingTwist&&!warnTimer){window._quotaClearTimer=null;showLevelComplete();return;}
+    } else {window._quotaClearTimer=null;}
   }
 
-  // Bullets
+  // Bullets — move all
   bullets=bullets.filter(b=>{
     b.x+=(b.vx||0)*dt;b.y+=(b.vy||(b.enemy?3.5:-12))*dt;
     if(b.enemy&&b.homing){
@@ -1126,6 +1191,29 @@ function loop(ts){
     }
     return b.y>-60&&b.y<H+60&&b.x>-50&&b.x<W+50;
   });
+
+  // Bullet vs Bullet — player bullets cancel enemy bullets on contact
+  const playerBullets=bullets.filter(b=>!b.enemy);
+  const enemyBullets=bullets.filter(b=>b.enemy);
+  const deadP=new Set(),deadE=new Set();
+  for(let pi=0;pi<playerBullets.length;pi++){
+    const pb=playerBullets[pi];
+    for(let ei=0;ei<enemyBullets.length;ei++){
+      if(deadE.has(ei))continue;
+      const eb=enemyBullets[ei];
+      if(Math.abs(pb.x-eb.x)<10&&Math.abs(pb.y-eb.y)<14){
+        deadP.add(pi);deadE.add(ei);
+        burst(pb.x,pb.y,'#ffaa00',4,{life:12,size:3,speed:2});
+        score+=2;
+        break;
+      }
+    }
+  }
+  if(deadP.size>0||deadE.size>0){
+    const aliveP=playerBullets.filter((_,i)=>!deadP.has(i));
+    const aliveE=enemyBullets.filter((_,i)=>!deadE.has(i));
+    bullets=[...aliveP,...aliveE];
+  }
 
   // Move enemies
   const frozen=frozenTimer>0;
@@ -1149,22 +1237,67 @@ function loop(ts){
       if(e.sTimer<=0){
         const ang=Math.atan2(player.y-e.y,player.x-e.x);
         const isH=activeTwist==='homing'&&Math.random()<.38;
-        bullets.push({x:e.x,y:e.y+e.h/2,vy:Math.sin(ang)*3.8,vx:Math.cos(ang)*3.8,enemy:true,dmg:1,homing:isH});
-        if(e.type==='tank'&&!frozen){bullets.push({x:e.x-8,y:e.y+e.h/2,vy:4,vx:-1,enemy:true,dmg:1,homing:false});bullets.push({x:e.x+8,y:e.y+e.h/2,vy:4,vx:1,enemy:true,dmg:1,homing:false});}
+        // Contra-style: aimed shot + spread on tougher enemies
+        bullets.push({x:e.x,y:e.y+e.h/2,vy:Math.sin(ang)*4.8,vx:Math.cos(ang)*4.8,enemy:true,dmg:1,homing:isH});
+        if(e.type==='tank'&&!frozen){
+          // tank fires triple burst
+          [-1.2,0,1.2].forEach(off=>bullets.push({x:e.x,y:e.y+e.h/2,vy:Math.sin(ang+off)*.3+4.5,vx:Math.cos(ang+off)*4.5,enemy:true,dmg:1,homing:false}));
+        }
+        if(e.type==='diamond'&&Math.random()<.45){
+          // diamond fires 2 angled shots
+          [-0.4,0.4].forEach(off=>bullets.push({x:e.x,y:e.y+e.h/2,vy:Math.sin(ang+off)*4.2,vx:Math.cos(ang+off)*4.2,enemy:true,dmg:1,homing:false}));
+        }
         if(e.type==='stealth'){SFX.stealth();e.revealing=true;}
-        e.sTimer=42+Math.random()*42;
+        e.sTimer=28+Math.random()*28; // shoot more frequently
       }
     }
   });
 
-  // Boss
+  // Boss — multi-phase attack patterns
   if(boss&&!frozen){
-    boss.x+=boss.speed*boss.dir*dt;if(boss.x>W-78||boss.x<78)boss.dir*=-1;
+    if(!boss.phase)boss.phase=0;
+    if(!boss.phaseTimer)boss.phaseTimer=0;
+    boss.phaseTimer+=rawDt;
+    const hpPct=boss.hp/boss.maxHp;
+    // Phase transitions based on HP
+    if(hpPct<0.3&&boss.phase<3){boss.phase=3;showMsg('BOSS ENRAGED!','#ff0000',16);SFX.fury();boss.speed*=1.5;screenShake=15;}
+    else if(hpPct<0.6&&boss.phase<2){boss.phase=2;showMsg('BOSS PHASE 2!','#ff8800',14);SFX.siren();boss.speed*=1.2;}
+    else if(hpPct<0.85&&boss.phase<1){boss.phase=1;}
+    // Movement — zigzag + vertical dashes
+    boss.x+=boss.speed*boss.dir*dt;
+    if(boss.x>W-78||boss.x<78)boss.dir*=-1;
+    // Vertical charge at phase 2+
+    if(boss.phase>=2&&Math.floor(boss.phaseTimer)%200===0){
+      boss.y=Math.min(H*0.35,boss.y+2*dt);
+    } else if(boss.y>110){boss.y-=0.8*dt;}
+    // Attack patterns
     boss.sTimer-=dt;
     if(boss.sTimer<=0){
-      const n=Math.min(3+Math.floor(level/3),9);
-      for(let i=0;i<n;i++){const a=-Math.PI/2+(i-(n-1)/2)*.2;bullets.push({x:boss.x,y:boss.y+boss.h/2,vy:Math.sin(a)*4+3.5,vx:Math.cos(a)*3.5,enemy:true,dmg:1,homing:false});}
-      boss.sTimer=16;
+      const atk=Math.floor(boss.phaseTimer/80)%4;
+      if(atk===0){
+        // Fan spread
+        const n=Math.min(5+Math.floor(level/2),13);
+        for(let i=0;i<n;i++){const a=-Math.PI/2+(i-(n-1)/2)*.18;bullets.push({x:boss.x,y:boss.y+boss.h/2,vy:Math.sin(a)*4.5+3,vx:Math.cos(a)*4,enemy:true,dmg:1,homing:false});}
+      } else if(atk===1){
+        // Spiral burst
+        const t2=Date.now()/200;
+        for(let i=0;i<8;i++){const a=t2+i*Math.PI/4;bullets.push({x:boss.x,y:boss.y,vx:Math.cos(a)*4.5,vy:Math.sin(a)*4.5,enemy:true,dmg:1,homing:false});}
+      } else if(atk===2){
+        // Aimed triple at player
+        const ang=Math.atan2(player.y-boss.y,player.x-boss.x);
+        [-0.15,0,0.15].forEach(off=>bullets.push({x:boss.x,y:boss.y+boss.h/2,vx:Math.cos(ang+off)*6,vy:Math.sin(ang+off)*6,enemy:true,dmg:1,homing:false}));
+      } else if(atk===3&&boss.phase>=1){
+        // Homing missiles
+        for(let i=0;i<(boss.phase>=2?3:2);i++){
+          const a=-Math.PI/2+(i-1)*.4;
+          bullets.push({x:boss.x+(i-1)*20,y:boss.y+boss.h/2,vx:Math.cos(a)*3,vy:Math.sin(a)*3+2,enemy:true,dmg:1,homing:true});
+        }
+      }
+      // Summon minions at phase 3
+      if(boss.phase>=3&&Math.random()<0.25){
+        spawnEnemy(boss.x-40);spawnEnemy(boss.x+40);
+      }
+      boss.sTimer=boss.phase>=3?10:boss.phase>=2?13:16;
     }
   }
 
@@ -1265,14 +1398,8 @@ function loop(ts){
     });
   }
 
-  // Enemies reach bottom
-  enemies=enemies.filter(e=>{
-    if(e.y>H+40){
-      if(!player.megaShield&&player.shield<=0&&player.invincible<=0){lives--;lvlNoHit=false;SFX.dmg();player.invincible=60;updateHUD();if(lives<=0){endGame();return false;}}
-      return false;
-    }
-    return true;
-  });
+  // Enemies reach bottom — just remove them, no life penalty (Contra style: only bullets/collision hurt)
+  enemies=enemies.filter(e=>e.y<=H+40);
 
   // Particles
   PPOOL.forEach(p=>{if(!p.alive)return;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=.07*dt;p.life-=rawDt;if(p.life<=0)p.alive=false;});
@@ -1351,10 +1478,10 @@ document.getElementById('resumeBtn').addEventListener('click',togglePause);
 // ══════════════════════════════════════════════
 //  BUTTONS
 // ══════════════════════════════════════════════
-document.getElementById('newBtn').addEventListener('click',()=>{clearSave();startGame(1);});
-document.getElementById('contBtn').addEventListener('click',()=>{const sv=getSave();startGame(sv?sv.level:1);});
-document.getElementById('retryBtn').addEventListener('click',()=>{clearSave();startGame(1);});
-document.getElementById('goContBtn').addEventListener('click',()=>{const sv=getSave();startGame(sv?sv.level:1);});
+document.getElementById('newBtn').addEventListener('click',()=>{rAC();clearSave();startGame(1);});
+document.getElementById('contBtn').addEventListener('click',()=>{rAC();const sv=getSave();startGame(sv?sv.level:1);});
+document.getElementById('retryBtn').addEventListener('click',()=>{rAC();clearSave();startGame(1);});
+document.getElementById('goContBtn').addEventListener('click',()=>{rAC();const sv=getSave();startGame(sv?sv.level:1);});
 
 // ══════════════════════════════════════════════
 //  LOAD SAVE
