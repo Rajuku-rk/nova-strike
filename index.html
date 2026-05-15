@@ -1966,13 +1966,19 @@
         // When quota met: clear remaining enemies after brief moment, then advance
         if (quotaDone) {
           // Wipe stragglers after 1.5s grace period
-          if (!window._quotaClearTimer) { window._quotaClearTimer = 90; }
+          if (window._quotaClearTimer == null) { window._quotaClearTimer = 90; }
           window._quotaClearTimer -= rawDt;
           if (window._quotaClearTimer <= 0) {
             enemies.forEach(e => burst(e.x, e.y, '#00ff88', 6, { life: 18, size: 3 }));
             enemies = [];
           }
-          if (enemies.length === 0 && !pendingTwist && !warnTimer) { window._quotaClearTimer = null; showLevelComplete(); return; }
+          if (enemies.length === 0) {
+            // Cancel any pending twist warning — quota win always takes priority
+            pendingTwist = null; warnTimer = 0;
+            document.getElementById('twistWarn').style.display = 'none';
+            window._quotaClearTimer = null;
+            showLevelComplete(); return;
+          }
         } else { window._quotaClearTimer = null; }
       }
 
