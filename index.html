@@ -1608,7 +1608,7 @@
     }
     function startTwist(twist) {
       activeTwist = twist.id; usedTwists.push(twist.id); twistTimer = twist.dur;
-      document.getElementById('twistWarn').style.display = 'none'; pendingTwist = null;
+      document.getElementById('twistWarn').style.display = 'none'; pendingTwist = null; warnTimer = 0;
       if (twist.id === 'dark') document.getElementById('darkOverlay').classList.add('dark');
       else if (twist.id === 'surge') enemies.forEach(e => e.speed *= 1.9);
       else if (twist.id === 'rain') { for (let w2 = 0; w2 < 5; w2++)setTimeout(() => { for (let i = 0; i < 3; i++)spawnEnemy(); }, w2 * 1100); }
