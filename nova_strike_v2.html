@@ -945,6 +945,8 @@
         PAUSED</div>
       <div class="pvol"><span>VOLUME</span><input type="range" id="volSlider" min="0" max="100" value="80"
           oninput="masterVol=this.value/100"></div>
+      <div class="pvol"><span>SPEED</span><input type="range" id="speedSlider" min="50" max="180" value="100"
+          oninput="moveSpeedMult=this.value/100;document.getElementById('speedVal').textContent=this.value+'%'"><span id="speedVal" style="min-width:32px;">100%</span></div>
       <div class="brow">
         <button class="gbtn pri" id="resumeBtn">▶ RESUME</button>
         <button class="gbtn sec" onclick="showScr('themeScreen')">THEMES</button>
@@ -993,7 +995,7 @@
     function hideScr(id) { document.getElementById(id).classList.remove('on'); }
 
     // ── AUDIO ──
-    let masterVol = 0.8;
+    let masterVol = 0.8, moveSpeedMult = 1.0;
     const AC = new (window.AudioContext || window.webkitAudioContext)();
     function rAC() { if (AC.state === 'suspended') AC.resume(); }
     function tone(f, t, d, v = 0.13, sf = null) {
@@ -1808,13 +1810,20 @@
         if (elapsed >= total) {
           clearInterval(lvlInterval); hideScr('lvlScreen');
           level++; selectedTheme = Math.floor((level - 1) / 3) % THEMES.length;
+          // Reset boss state before potentially spawning a new one
+          bossMode = false; boss = null;
+          enemies = []; bullets = []; powerups = [];
+          window._quotaClearTimer = null;
           if (level % 3 === 0) spawnBoss();
           clones = []; frozenTimer = 0; furyTimer = 0; timeWarpTimer = 0; slowMult = 1;
           powerStrength = Math.floor(powerStrength * .5);
           killCount = 0; killQuota = getKillQuota();
-          spawnTimer = 0; waveNum = 0; shotsFired = 0; shotsHit = 0; lvlNoHit = true; bossNoHit = true;
+          // Give spawnTimer a head start so first wave arrives quickly
+          spawnTimer = Math.floor(getSpawnInterval() * 0.65);
+          waveNum = 0; shotsFired = 0; shotsHit = 0; lvlNoHit = true; bossNoHit = true;
           levelPaused = false; gameOn = true; updateHUD(); updateKillBar(); pgStart();
-          if (nextTwist) setTimeout(() => { if (gameOn && !levelPaused && !paused) triggerWarning(nextTwist); }, 3500);
+          // Delay twist warning until after first wave is visible
+          if (nextTwist) setTimeout(() => { if (gameOn && !levelPaused && !paused) triggerWarning(nextTwist); }, 5500);
           requestAnimationFrame(loop);
         }
       }, step);
@@ -1891,7 +1900,7 @@
       updateTwist(rawDt);
 
       // Player move
-      const spd = player.speed * (player.speedBoost ? 1.75 : 1);
+      const spd = player.speed * moveSpeedMult * (player.speedBoost ? 1.75 : 1);
       if (keys['ArrowLeft'] || keys['a'] || keys['ml']) player.x = Math.max(player.w / 2, player.x - spd * dt);
       if (keys['ArrowRight'] || keys['d'] || keys['mr']) player.x = Math.min(W - player.w / 2, player.x + spd * dt);
       if (keys['ArrowUp'] || keys['w'] || keys['mu']) player.y = Math.max(PLAY_TOP, player.y - spd * dt);
